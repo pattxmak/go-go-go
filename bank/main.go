@@ -24,22 +24,35 @@ func main() {
 	_ = db
 
 	// using db data
+
+	// CUSTOMER
 	// customerRepositoryDB := repository.NewCustomerRepositoryDB(db)
 	// customerService := service.NewCustomerService(customerRepositoryDB)
 	// customerHandler := handler.NewCustomerHandler(customerService)
 
-	// using mock data
-	customerRepositoryMock := repository.NewCustomerRepositoryMock()
-	customerServiceMock := service.NewCustomerService(customerRepositoryMock)
-	customerHandlerMock := handler.NewCustomerHandler(customerServiceMock)
+	// ACCOUNT
+	accountRepositoryDB := repository.NewAccountRepositoryDB(db)
+	accountService := service.NewAccountService(accountRepositoryDB)
+	accountHandler := handler.NewAccountHandler(accountService) 
+
+	// mock data
+	// customerRepositoryMock := repository.NewCustomerRepositoryMock()
+	// customerServiceMock := service.NewCustomerService(customerRepositoryMock)
+	// customerHandlerMock := handler.NewCustomerHandler(customerServiceMock)
 
 	router := mux.NewRouter()
 
+	// CUSTOMER ROUTER
 	// router.HandleFunc("/customers", customerHandler.GetCustomers).Methods(http.MethodGet)
 	// router.HandleFunc("/customers/{customerId:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
-
-	router.HandleFunc("/customers", customerHandlerMock.GetCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandlerMock.GetCustomer).Methods(http.MethodGet)
+	
+	// ACCOUNT ROUTER
+	router.HandleFunc("/customers/{customerId:[0-9]+}/accounts", accountHandler.GetAccounts).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customerId:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
+	
+	// MOCK ROUTER
+	// router.HandleFunc("/customers", customerHandlerMock.GetCustomers).Methods(http.MethodGet)
+	// router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandlerMock.GetCustomer).Methods(http.MethodGet)
 
 	fmt.Printf("Banking service started at port %v", viper.GetInt("app.port"))
 	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)
@@ -68,6 +81,10 @@ func main() {
 	// 	panic(err)
 	// }
 	// fmt.Println(customer)
+
+	// =====================================
+	// ACCOUNT 	
+	// =====================================
 
 }
 

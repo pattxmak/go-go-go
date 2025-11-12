@@ -1,10 +1,10 @@
 package service
 
 import (
+	"bank/errs"
+	"bank/logs"
 	"bank/repository"
 	"database/sql"
-	"errors"
-	"log"
 )
 
 type customerService struct {
@@ -19,24 +19,23 @@ func (s customerService) GetCustomers() ([]CustomerResponse, error) {
 
 	customers, err := s.custRepo.GetAll()
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		// log.Println(err)
+		logs.Error(err)
+		return nil, errs.NewUnexpectedError()
 	}
 
 	custResponses := []CustomerResponse{}
 	for _, customer := range customers {
-		 
+
 		custResponse := CustomerResponse{
 			CustomerID: customer.CustomerID,
-			Name: customer.Name,
-			Status: customer.Status,
+			Name:       customer.Name,
+			Status:     customer.Status,
 		}
 		custResponses = append(custResponses, custResponse)
-		return custResponses, nil
-
 	}
-
-	return nil, nil
+	
+	return custResponses, nil
 }
 
 func (s customerService) GetCustomer(id int) (*CustomerResponse, error) {
@@ -45,18 +44,20 @@ func (s customerService) GetCustomer(id int) (*CustomerResponse, error) {
 	if err != nil {
 
 		if err == sql.ErrNoRows {
-			return nil, errors.New("customer not found")
+			// return nil, errors.New("customer not found")
+			return nil, errs.NewNotfoundError("customer not found")
 		}
 
-		log.Println(err)
-		return nil, err
+		// log.Println(err)
+		logs.Error(err)
+		return nil, errs.NewUnexpectedError()
 	}
 
 	custResponse := CustomerResponse{
 		CustomerID: customer.CustomerID,
-		Name: customer.Name,
-		Status: customer.Status,
+		Name:       customer.Name,
+		Status:     customer.Status,
 	}
-	
+
 	return &custResponse, nil
 }
